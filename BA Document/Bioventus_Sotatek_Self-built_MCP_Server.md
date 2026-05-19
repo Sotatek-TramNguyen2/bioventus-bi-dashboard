@@ -24,7 +24,20 @@
 
 tool_get_jira_dashboard_data
 
-Lấy toàn bộ dữ liệu tổng hợp và chi tiết để kết xuất Dashboard phân tích hiệu suất team BI (Jira Tickets). Trả về: kpi_metrics (Total Tickets, Average Days to Complete), chart_data (số liệu group sẵn theo Assignee, Status, RequestType, Year, Month), detail_table (danh sách ticket chi tiết gồm IssueKey, Summary, Assignee, Reporter, Status, RequestType, DaysToComplete). Output: Chart + Table.
+Lấy toàn bộ dữ liệu tổng hợp và chi tiết để kết xuất Dashboard phân tích hiệu suất team BI (Jira Tickets). Trả về: kpi_metrics (Total Tickets, Average Days to Complete), chart_data (số liệu group sẵn theo Assignee, Status, RequestType, Year, Month), detail_table (danh sách ticket chi tiết gồm IssueKey, Summary, Assignee, Reporter, Status, RequestType, DaysToComplete).
+Output: Chart + Table.
+
+AI Response Template:
+"[Context] Tôi đã tổng hợp dữ liệu Jira từ [date_from] đến [date_to].
+
+[KPI] [key metrics]
+
+[Chart] Mô tả chart đã gen + "để bạn có cái nhìn tổng quan về [topic]"
+
+[Table] "Bảng [mô tả nội dung]"
+
+[Suggestion] "Bạn có muốn xem chi tiết về [related topic] không?""
+
 Params:
 - assignee_name: Tên người xử lý (từ Dim_User). Để trống = tất cả.
 - reporter_name: Tên người tạo yêu cầu (từ Dim_User). Để trống = tất cả.
@@ -40,7 +53,20 @@ tool_get_jira_dashboard_data
 
 tool_get_sales_dashboard_data
 
-Lấy toàn bộ dữ liệu tổng hợp và chi tiết để kết xuất Dashboard Kinh doanh và Đối tác y tế. Trả về: kpi_metrics (Total Revenue, Total Quantity), chart_data (doanh thu & số lượng group theo AccountType, Region, Year, Month), detail_table (danh sách giao dịch gồm TransactionID, PartnerName, AccountType, Region, OrderDate, Quantity, NetValue). Output: Chart + Table.
+Lấy toàn bộ dữ liệu tổng hợp và chi tiết để kết xuất Dashboard Kinh doanh và Đối tác y tế. Trả về: kpi_metrics (Total Revenue, Total Quantity), chart_data (doanh thu & số lượng group theo AccountType, Region, Year, Month), detail_table (danh sách giao dịch gồm TransactionID, PartnerName, AccountType, Region, OrderDate, Quantity, NetValue).
+Output: Chart + Table.
+
+AI Response Template:
+"[Context] Tôi đã tổng hợp dữ liệu kinh doanh từ [date_from] đến [date_to].
+
+[KPI] [key metrics]
+
+[Chart] Mô tả chart đã gen + "để bạn có cái nhìn tổng quan về [topic]"
+
+[Table] "Bảng [mô tả nội dung]"
+
+[Suggestion] "Bạn có muốn xem thêm [related action] không?""
+
 Params:
 - account_type: Phân loại đối tác (từ Dim_Partner_Account), ví dụ "Hospitals", "Patients", "Distributors". Để trống = tất cả.
 - region: Khu vực phân phối (từ Dim_Partner_Account). Để trống = tất cả.
@@ -55,7 +81,16 @@ tool_get_sales_dashboard_data
 
 tool_get_partner_directory
 
-Tra cứu và phân trang danh mục đối tác khách hàng từ bảng Dim_Partner_Account. Hữu ích khi AI cần tìm chính xác tên một bệnh viện/bác sĩ trước khi query giao dịch. Trả về: danh sách PartnerID, PartnerName, AccountType, Region. Output: Table.
+Tra cứu và phân trang danh mục đối tác khách hàng từ bảng Dim_Partner_Account. Hữu ích khi AI cần tìm chính xác tên một bệnh viện/bác sĩ trước khi query giao dịch. Trả về: danh sách PartnerID, PartnerName, AccountType, Region.
+Output: Table.
+
+AI Response Template:
+"[Context] Tôi đã tra cứu danh mục đối tác [search_term/account_type/region].
+
+[Table] "Bảng [mô tả nội dung]"
+
+[Suggestion] "Bạn có muốn xem chi tiết giao dịch của [partner_name] không?""
+
 Params:
 - search_term: Tìm kiếm gần đúng theo PartnerName (chuỗi text). Để trống = tất cả.
 - account_type: Phân loại đối tác. Để trống = tất cả.
@@ -68,7 +103,16 @@ tool_get_partner_directory
 
 tool_get_system_metadata
 
-Lấy danh sách các giá trị hợp lệ (Valid values) của các bộ lọc (Filters/Dimensions) trong toàn bộ hệ thống. Trả về: danh sách mảng JSON chứa Users (từ Dim_User), Statuses (từ Dim_Status), RequestTypes (từ Dim_RequestType), AccountTypes và Regions (từ Dim_Partner_Account). Output: Reference Data (không trực tiếp sinh chart/table, AI dùng để validate trước khi gọi tool khác).
+Lấy danh sách các giá trị hợp lệ (Valid values) của các bộ lọc (Filters/Dimensions) trong toàn bộ hệ thống. Trả về: danh sách mảng JSON chứa Users (từ Dim_User), Statuses (từ Dim_Status), RequestTypes (từ Dim_RequestType), AccountTypes và Regions (từ Dim_Partner_Account).
+Output: Reference Data (không trực tiếp sinh chart/table, AI dùng để validate trước khi gọi tool khác).
+
+AI Response Template:
+"[Context] Danh sách giá trị hợp lệ trong hệ thống:
+
+[Reference Data] Liệt kê các valid values theo nhóm
+
+[Suggestion] "Bạn có muốn tra cứu đối tác cụ thể hoặc xem dashboard không?""
+
 Params:
 - (Không yêu cầu tham số)
 
@@ -80,7 +124,18 @@ tool_get_system_metadata
 
 tool_get_jira_ticket_deepdive
 
-Truy xuất lịch sử và thông tin siêu chi tiết của MỘT ticket duy nhất nhằm phục vụ cho mục đích điều tra (Investigate) trực tiếp. Trả về: toàn bộ trường dữ liệu có trong Fact_JiraTicket và các bảng Dim liên quan tương ứng với Ticket đó (IssueKey, Summary, Assignee, Reporter, Status, RequestType, CreatedDate, ResolvedDate, DaysToComplete). Output: Detail View (hiển thị chi tiết 1 ticket, có thể render thành formatted card hoặc table row).
+Truy xuất lịch sử và thông tin siêu chi tiết của MỘT ticket duy nhất nhằm phục vụ cho mục đích điều tra (Investigate) trực tiếp. Trả về: toàn bộ trường dữ liệu có trong Fact_JiraTicket và các bảng Dim liên quan tương ứng với Ticket đó (IssueKey, Summary, Assignee, Reporter, Status, RequestType, CreatedDate, ResolvedDate, DaysToComplete).
+Output: Detail View.
+
+AI Response Template:
+"[Context] Chi tiết ticket [issue_key]:
+
+[Detail View] Hiển thị toàn bộ fields của ticket
+
+[Insight] "Ticket này đã [action] trong [days] ngày. [So sánh với average]"
+
+[Suggestion] "Bạn có muốn xem các ticket cùng Assignee/Reporter không?""
+
 Params:
 - issue_key: Bắt buộc. Mã ticket thực tế trên Jira, ví dụ "BI-1411", "BI-1429".
 
@@ -90,7 +145,18 @@ tool_get_jira_ticket_deepdive
 
 tool_get_partner_transaction_deepdive
 
-Truy xuất chi tiết tất cả các giao dịch (Transactions) của MỘT đối tác cụ thể để làm báo cáo công nợ hoặc sao kê chi tiết. Trả về: danh sách TransactionID, OrderDate, Quantity, NetValue và summary (total_transactions, total_quantity, total_net_value). Output: Table + Summary.
+Truy xuất chi tiết tất cả các giao dịch (Transactions) của MỘT đối tác cụ thể để làm báo cáo công nợ hoặc sao kê chi tiết. Trả về: danh sách TransactionID, OrderDate, Quantity, NetValue và summary (total_transactions, total_quantity, total_net_value).
+Output: Table + Summary.
+
+AI Response Template:
+"[Context] Sao kê giao dịch của [partner_name]:
+
+[Summary] Tổng quan: total_transactions, total_quantity, total_net_value
+
+[Table] Chi tiết từng giao dịch
+
+[Suggestion] "Bạn có muốn so sánh với đối tác khác hoặc xem trend không?""
+
 Params:
 - partner_id: Bắt buộc. PartnerID của đối tác cần sao kê.
 - date_from: Lọc từ ngày, định dạng "YYYY-MM-DD". Để trống = không lọc.
@@ -101,16 +167,37 @@ tool_get_partner_transaction_deepdive
 
 ---
 
-## OUTPUT TYPES REFERENCE
+## OUTPUT RESPONSE RULES
 
-| Output Type | Mô tả | Dùng khi |
-|-------------|-------|----------|
-| Chart + Table | KPI metrics + chart_data + detail_table | Dashboard tổng hợp |
-| Chart | KPI metrics + chart_data | Câu hỏi về xu hướng, so sánh, phân bổ |
-| Table | detail_table hoặc danh sách items | Tra cứu, tìm kiếm, sao kê |
-| Table + Summary | detail_table + summary metrics | Báo cáo công nợ, sao kê đối tác |
-| Detail View | Single record với đầy đủ fields | Điều tra ticket/giao dịch cụ thể |
-| Reference Data | Danh sách valid values | AI validate trước khi query chính |
+### AI Response Structure
+
+Mỗi response từ AI phải có 4 phần:
+
+| Phần | Mô tả | Ví dụ |
+|------|-------|-------|
+| **Context** | Giải thích AI đã làm gì, data range nào | "Tôi đã tổng hợp dữ liệu Jira từ 2025-01-01 đến 2026-05-19" |
+| **KPIs/Chart** | Key metrics + chart đã gen | "Tổng 661 ticket, chart top 10 assignee" |
+| **Table** | Mô tả rõ bảng đang hiển thị | "Bảng top 10 partner có doanh thu cao nhất" |
+| **Suggestion** | Gợi ý action liên quan | "Bạn có muốn xem chi tiết giao dịch của partner này không?" |
+
+### Context Formatting
+
+| Output Type | Context Example |
+|-------------|-----------------|
+| Chart + Table | "để bạn có cái nhìn tổng quan về [topic]" |
+| Table only | "Dưới đây là bảng [mô tả nội dung]" |
+| Detail View | "Chi tiết ticket [issue_key]" |
+| Reference Data | "Danh sách giá trị hợp lệ trong hệ thống" |
+
+### Suggestion Patterns
+
+| Khi user hỏi | AI suggest |
+|---------------|------------|
+| Top N items | "Bạn có muốn xem [N+1] hoặc filter thêm không?" |
+| Một loại đối tác | "Bạn có muốn so sánh với loại đối tác khác không?" |
+| Một khu vực | "Bạn có muốn xem các khu vực khác không?" |
+| Chi tiết 1 item | "Bạn có muốn xem các item cùng [Assignee/Type/Region] không?" |
+| Tổng quan | "Bạn có muốn drill down vào [segment] cụ thể không?" |
 
 ---
 
