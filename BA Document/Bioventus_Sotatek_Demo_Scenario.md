@@ -56,9 +56,16 @@ Tôi đã tổng hợp dữ liệu Jira từ 2026-01-01 đến 2026-05-19.
 
 📋 Bảng chi tiết 50 ticket gần nhất:
 | IssueKey | Summary | Assignee | Status | DaysToComplete |
+|----------|---------|----------|--------|----------------|
 | BI-1411 | Update dashboard... | Rahime | Done | 3 |
 | BI-1410 | Fix report... | Koh | In Progress | 12 |
 ...
+
+📝 Power BI Guide:
+- KPI Card 1: Value = COUNTROWS(Fact_JiraTicket), Subtitle = AVG(Fact_JiraTicket[DaysToComplete])
+- KPI Card 2: Trend = vs Last Year (CALCULATE + SAMEPERIODLASTYEAR)
+- Stacked Bar Chart: Y-Axis = Dim_Status[StatusName], X-Axis = COUNTROWS(Fact_JiraTicket), Legend = Dim_Status[StatusCategory]
+- Detail Table: Columns = Fact_JiraTicket[IssueKey], Fact_JiraTicket[Summary], Dim_User[UserName] (Assignee), Dim_Status[StatusName], Fact_JiraTicket[DaysToComplete]
 
 Bạn có muốn drill down vào trạng thái cụ thể nào không?
 ```
@@ -96,6 +103,11 @@ Tôi đã tổng hợp dữ liệu Jira từ 2026-01-01 đến 2026-05-19.
 [Chart: Rahime 71, Koh 58, Shankar 45, Robert 38, ...]
 → Để bạn có cái nhìn tổng quan về workload theo từng người xử lý
 
+📝 Power BI Guide:
+- Horizontal Bar Chart: Y-Axis = Dim_User[UserName], X-Axis = COUNTROWS(Fact_JiraTicket), Sort = Descending
+- Tooltips: AVG(Fact_JiraTicket[DaysToComplete]) để xem ai xử lý nhanh hơn
+- Visual Filter: status_name = "Done" (nếu muốn xem riêng ticket đã done)
+
 Bạn có muốn xem chi tiết ticket của Rahime hoặc so sánh với người khác không?
 ```
 
@@ -125,12 +137,19 @@ Tôi đã tổng hợp các ticket đang open từ 2026-01-01 đến 2026-05-19.
 
 📋 Bảng ticket đang pending (sắp xếp theo ngày tạo):
 | IssueKey | Summary | Assignee | Status | CreatedDate | DaysPending |
+|----------|---------|----------|--------|-------------|-------------|
 | BI-1301 | Fix dashboard... | Koh | In Progress | 2026-04-15 | 34 days |
 | BI-1289 | Update report... | Shankar | QA UAT | 2026-04-20 | 29 days |
 | BI-1275 | New dataset... | Robert | Development | 2026-04-25 | 24 days |
 ...
 
 ⚠️ Có 15 ticket đang open hơn 2 tuần chưa được xử lý.
+
+📝 Power BI Guide:
+- Table: Columns = Fact_JiraTicket[IssueKey], Fact_JiraTicket[Summary], Dim_User[UserName] (Assignee), Dim_Status[StatusName], Dim_Date[Date] (CreatedDate), Fact_JiraTicket[DaysToComplete]
+- Conditional Formatting: DaysToComplete > 14 → Background = Red
+- Sort by: Dim_Date[Date] (CreatedDate) Ascending (ticket cũ nhất lên đầu)
+- Visual Filter: Dim_Status[StatusCategory] <> "Closed"
 
 Bạn có muốn tôi thông báo cho assignee hoặc xem chi tiết ticket cụ thể không?
 ```
@@ -167,6 +186,11 @@ Tôi đã tra cứu danh mục đối tác với từ khóa "Mayo Clinic".
 - Địa chỉ: Rochester, Minnesota
 - Tổng giao dịch: 12
 - Tổng doanh thu: $900,000
+
+📝 Power BI Guide:
+- Table: Columns = Dim_Partner_Account[PartnerID], Dim_Partner_Account[PartnerName], Dim_Partner_Account[AccountType], Dim_Partner_Account[Region]
+- Search: Dùng Visual Filter với "Contains" hoặc FILTER() DAX
+- Slicer bổ sung: Dim_Partner_Account[AccountType], Dim_Partner_Account[Region]
 
 Bạn có muốn xem chi tiết giao dịch của Mayo Clinic không?
 ```
@@ -205,9 +229,17 @@ Tôi đã tổng hợp dữ liệu kinh doanh từ 2026-01-01 đến 2026-05-19.
 
 📋 Bảng top 10 partner có doanh thu cao nhất:
 | PartnerName | AccountType | TotalRevenue |
+|-------------|-------------|--------------|
 | Mayo Clinic | Hospitals | $900,000 |
 | Johns Hopkins | Hospitals | $850,000 |
 ...
+
+📝 Power BI Guide:
+- KPI Card: Value = SUM(Fact_PartnerTransaction[NetValue]), Subtitle = SUM(Fact_PartnerTransaction[Quantity])
+- Horizontal Bar Chart: Y-Axis = Dim_Partner_Account[AccountType], X-Axis = SUM(Fact_PartnerTransaction[NetValue])
+- Pie Chart: Legend = Dim_Partner_Account[AccountType], Values = SUM(Fact_PartnerTransaction[NetValue])
+- Clustered Bar (Revenue vs Quantity): Y-Axis = Dim_Partner_Account[AccountType], X-Axis = SUM(NetValue) và SUM(Quantity)
+- Detail Table: Columns = Dim_Partner_Account[PartnerName], Dim_Partner_Account[AccountType], SUM(Fact_PartnerTransaction[NetValue]), Sort = NetValue Descending
 
 Bạn có muốn so sánh với loại đối tác khác hoặc xem theo khu vực không?
 ```
@@ -256,6 +288,11 @@ Chi tiết ticket BI-1411:
 
 💡 Ticket này được xử lý trong 3 ngày, nhanh hơn average (4.5 days) → SLA OK.
 
+📝 Power BI Guide:
+- Multi-row Card: Fields = Fact_JiraTicket[IssueKey], Fact_JiraTicket[Summary], Dim_Status[StatusName], Fact_JiraTicket[DaysToComplete]
+- Table (1 row): Columns = Fact_JiraTicket[IssueKey], Fact_JiraTicket[Summary], Dim_User[UserName] (Assignee - USERELATIONSHIP), Dim_User[UserName] (Reporter - USERELATIONSHIP), Dim_Status[StatusName], Dim_RequestType[RequestTypeName], Dim_Date[Date] (CreatedDate), Dim_Date[Date] (ResolvedDate - USERELATIONSHIP), Fact_JiraTicket[DaysToComplete]
+- Visual Filter: Fact_JiraTicket[IssueKey] = "BI-1411"
+
 Bạn có muốn xem các ticket cùng Assignee (Rahime) hoặc cùng Request Type không?
 ```
 
@@ -294,8 +331,13 @@ Sao kê giao dịch của Mayo Clinic (BP-001234):
 |---------------|-----------|----------|----------|
 | SO-2026-001234 | 2026-05-15 | 150 | $75,000 |
 | SO-2026-001189 | 2026-04-28 | 200 | $100,000 |
-| SO-2026-001145 | 2026-04-10 | 175 | $87,500 |
 ...
+
+📝 Power BI Guide:
+- KPI Summary (3 Cards): Card1 = COUNTROWS(Fact_PartnerTransaction), Card2 = SUM(Quantity), Card3 = SUM(NetValue)
+- Transaction Table: Columns = Fact_PartnerTransaction[TransactionID], Dim_Date[Date] (OrderDate), Fact_PartnerTransaction[Quantity], Fact_PartnerTransaction[NetValue], Sort = OrderDate Descending
+- Visual Filter: Dim_Partner_Account[PartnerID] = "BP-001234"
+- Line Chart (Trend): X-Axis = Dim_Date[MonthName], Y-Axis = SUM(NetValue), Filter = PartnerID = "BP-001234"
 
 Bạn có muốn so sánh với đối tác khác (ví dụ Johns Hopkins) hoặc xem trend theo tháng không?
 ```
@@ -343,6 +385,13 @@ Danh sách giá trị hợp lệ trong hệ thống:
 | New Dataset |
 | Data Quality Investigation |
 
+📝 Power BI Guide:
+- Status Slicer: Field = Dim_Status[StatusName], Type = Dropdown
+- Request Type Slicer: Field = Dim_RequestType[RequestTypeName], Type = List
+- Account Type Slicer: Field = Dim_Partner_Account[AccountType]
+- Region Slicer: Field = Dim_Partner_Account[Region]
+- Ghi chú: Dùng Dimension fields cho slicer, KHÔNG hard-code giá trị
+
 💡 Danh sách này giúp bạn biết giá trị nào hợp lệ khi lọc.
 
 Bạn có muốn tra cứu đối tác cụ thể hoặc xem dashboard tổng quan không?
@@ -379,13 +428,13 @@ Tôi đã tổng hợp dữ liệu Jira từ 2026-01-01 đến 2026-05-19.
 [Chart: Koh 42, Conrad 38, Faeza 35, ...]
 → Để bạn có cái nhìn tổng quan về ai đang gửi nhiều request nhất
 
-📋 Bảng top 10 reporter:
-| Reporter | Department | TotalTickets |
-| Koh Higaki | Operations | 42 |
-| Conrad Sheffer | Finance | 38 |
-...
-
 💡 Koh Higaki gửi nhiều request nhất (42), chủ yếu là Update Existing Report và New Report.
+
+📝 Power BI Guide:
+- Bar Chart: Y-Axis = Dim_User[UserName] (Reporter - dùng USERELATIONSHIP), X-Axis = COUNTROWS(Fact_JiraTicket)
+- Measure: [Tickets by Reporter] = CALCULATE(COUNTROWS(Fact_JiraTicket), USERELATIONSHIP(Dim_User[UserKey], Fact_JiraTicket[ReporterKey]))
+- Table: Columns = Dim_User[UserName] (Reporter), COUNTROWS(Fact_JiraTicket), Sort = Descending
+- Visual Filter: Dùng ReporterKey (Inactive relationship)
 
 Bạn có muốn xem Koh gửi yêu cầu về loại nào nhiều nhất không?
 ```
@@ -430,6 +479,12 @@ Tôi đã tổng hợp dữ liệu Jira từ 2026-01-01 đến 2026-05-19.
 
 💡 "Report an Issue" có SLA cao nhất (6.5 days) → có thể cần ưu tiên xử lý.
 
+📝 Power BI Guide:
+- Horizontal Bar Chart: Y-Axis = Dim_RequestType[RequestTypeName], X-Axis = COUNTROWS(Fact_JiraTicket)
+- Clustered Bar (Tickets + Avg Days): Y-Axis = Dim_RequestType[RequestTypeName], X-Axis = COUNTROWS(Fact_JiraTicket) và AVG(Fact_JiraTicket[DaysToComplete])
+- Table: Columns = Dim_RequestType[RequestTypeName], COUNTROWS(Fact_JiraTicket), AVG(Fact_JiraTicket[DaysToComplete])
+- Legend (optional): Dim_RequestType[RequestTypeName]
+
 Bạn có muốn xem chi tiết ticket "Report an Issue" hoặc so sánh với tháng trước không?
 ```
 
@@ -467,8 +522,15 @@ Tôi đã tổng hợp ticket Done từ 2026-05-01 đến 2026-05-19.
 
 📋 Bảng ticket Done gần nhất:
 | IssueKey | Summary | Assignee | ResolvedDate |
+|----------|---------|----------|--------------|
 | BI-1405 | Update... | Rahime | 2026-05-18 |
 ...
+
+📝 Power BI Guide:
+- KPI Card: Value = COUNTROWS(Fact_JiraTicket) (với filter status = "Done"), Subtitle = AVG(Fact_JiraTicket[DaysToComplete])
+- Line Chart: X-Axis = Dim_Date[Date] (CreatedDate), Y-Axis = COUNTROWS(Fact_JiraTicket)
+- Visual Filter: Dim_Status[StatusName] = "Done"
+- Slicer bổ sung: Dim_Date[MonthName], Dim_Date[Year]
 
 Bạn có muốn so sánh với tháng 4 hoặc xem ticket chưa Done không?
 ```
@@ -506,6 +568,12 @@ Tôi đã tra cứu danh mục đối tác với filter: Hospitals | Midwest.
 ...
 
 💡 Có 45 bệnh viện ở Midwest trong hệ thống.
+
+📝 Power BI Guide:
+- Table: Columns = Dim_Partner_Account[PartnerID], Dim_Partner_Account[PartnerName], Dim_Partner_Account[AccountType], Dim_Partner_Account[Region]
+- Slicer: Dim_Partner_Account[AccountType] = "Hospitals", Dim_Partner_Account[Region] = "Midwest"
+- Search: Dùng Visual Filter hoặc FILTER() DAX
+- Sort: PartnerName Ascending
 
 Bạn có muốn xem chi tiết giao dịch của bệnh viện cụ thể hoặc so sánh Midwest với region khác không?
 ```
@@ -549,6 +617,11 @@ Tôi đã tổng hợp dữ liệu kinh doanh từ 2026-01-01 đến 2026-05-19.
 
 💡 Northeast dẫn đầu về doanh thu ($5.25M), chiếm 35%.
 
+📝 Power BI Guide:
+- Pie/Donut Chart: Legend = Dim_Partner_Account[Region], Values = SUM(Fact_PartnerTransaction[NetValue])
+- Table: Columns = Dim_Partner_Account[Region], COUNTROWS(Dim_Partner_Account) (Partners), COUNTROWS(Fact_PartnerTransaction) (Transactions), SUM(Fact_PartnerTransaction[NetValue])
+- Drillthrough: Region → Partner Details
+
 Bạn có muốn drill down vào Northeast để xem top partners hoặc so sánh với region khác không?
 ```
 
@@ -583,6 +656,11 @@ Tôi đã tổng hợp dữ liệu Jira từ 2026-01-01 đến 2026-05-19.
 └─────────────────────┘
 
 💡 Hiện có 661 ticket trong hệ thống, tăng 12% so với cùng kỳ năm ngoái.
+
+📝 Power BI Guide:
+- KPI Card: Value = COUNTROWS(Fact_JiraTicket), Goal (optional) = 600
+- Trend Indicator: CALCULATE(COUNTROWS(Fact_JiraTicket), SAMEPERIODLASTYEAR(Dim_Date[Date]))
+- Comparison: "vs Last Year" = DIVIDE(COUNTROWS(Fact_JiraTicket), CALCULATE(COUNTROWS(Fact_JiraTicket), SAMEPERIODLASTYEAR(Dim_Date[Date]))) - 1
 
 Bạn có muốn xem chi tiết theo assignee, status hoặc request type không?
 ```
@@ -628,6 +706,12 @@ Tôi đã tổng hợp dữ liệu từ cả Jira và SAP từ 2026-01-01 đến
 → Để bạn có cái nhìn tổng quan về tương quan giữa workload và doanh thu
 
 💡 Workload Jira tăng 12% trong khi Revenue chỉ tăng 8%. Team BI đang xử lý nhiều ticket hơn nhưng doanh thu không tăng tương xứng.
+
+📝 Power BI Guide:
+- KPI Cards (2 side by side): Card1 = COUNTROWS(Fact_JiraTicket), Card2 = SUM(Fact_PartnerTransaction[NetValue])
+- Combo Chart: Axis = Dim_Date[MonthName], Bar Values = COUNTROWS(Fact_JiraTicket), Line Values = SUM(Fact_PartnerTransaction[NetValue])
+- Cross-filter: Chọn Region/AccountType → filter cả Jira và SAP visuals
+- Ghi chú: Cần tạo separate page cho mỗi domain, dùng sync slicers để link
 
 Bạn có muốn drill down vào segment nào cụ thể (theo assignee, region, hoặc account type) để phân tích sâu hơn không?
 ```
